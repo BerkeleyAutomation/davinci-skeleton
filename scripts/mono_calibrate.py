@@ -1,3 +1,22 @@
+"""
+This script handles the wrist calibration of the robot to image frame.
+
+Specifically, this helps us translate from image coordinates from the dvrk
+camera (i.e. pixels) to the robot coordinates. This assumes that the surface of
+interest for where the robot will be touching is flat and has a set of clearly
+defined circular contours. After the robot and camera are both set up, the data
+collector will generate left camera images and right camera images, along with
+respective contours. 
+
+Then, during `calibrateImage`, the code sequentially iterates through contours
+and displays the selected contour on screen. At that point, the code waits
+(using `cv2.waitKey`), and a human must adjust the appropriate arm of the dvrk
+(left or right) so that the end-effector lies in the center of the chosen
+contour. This process repeats for all subsequent contours, and the data points
+are stored in a pickle file. Then, use `mono_calibrate_generate_maps.py` to
+figure out a mapping from image pixels to robot coordinates.
+"""
+
 import environ
 
 from dvrk.robot import *
@@ -6,10 +25,6 @@ from autolab.data_collector import DataCollector
 import cv2
 import numpy as np
 import pickle
-
-"""
-This script handles the wrist calibration of the robot to image frame
-"""
 
 def initializeRobots():
 
